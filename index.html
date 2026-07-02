@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimon — frontend-разработчик</title>
+    <style>
+        :root {
+            --bg:#0e1013; --panel:#16191f; --border:#262b34; --text:#e7ebf0;
+            --muted:#8b95a3; --amber:#f0a833; --amber-dim:#b8802a; --bid:#3fb68b;
+            --mono:"SF Mono","JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+            --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+        #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+        body::before { content:""; position:fixed; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--amber),var(--amber-dim),transparent); z-index:10; }
+        .wrap { position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 24px; }
+        header { padding:88px 0 56px; border-bottom:1px solid var(--border); }
+        .prompt { font-family:var(--mono); font-size:14px; color:var(--muted); margin-bottom:20px; min-height:18px; }
+        .prompt .amber { color:var(--amber); }
+        .prompt .caret { display:inline-block; width:8px; height:16px; background:var(--amber); vertical-align:-3px; margin-left:2px; animation:blink 1.1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity:0; } }
+        header h1 { font-family:var(--mono); font-size:56px; font-weight:600; letter-spacing:-1px; line-height:1.05; margin-bottom:14px; }
+        header .role { font-size:18px; color:var(--muted); }
+        header .role b { color:var(--amber); font-weight:600; }
+        section { padding:48px 0; border-bottom:1px solid var(--border); }
+        .label { font-family:var(--mono); font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--amber-dim); margin-bottom:20px; }
+        .about-text { font-size:17px; color:var(--text); max-width:60ch; }
+        .card { position:relative; background:var(--panel); border:1px solid var(--border); border-left:2px solid var(--amber); border-radius:8px; padding:24px; margin-bottom:16px; transition:transform .18s ease; overflow:hidden; }
+        .card::before { content:""; position:absolute; inset:0; background:radial-gradient(220px circle at var(--mx,-100px) var(--my,-100px),rgba(240,168,51,.10),transparent 60%); opacity:0; transition:opacity .25s ease; pointer-events:none; }
+        .card:hover { transform:translateY(-2px); }
+        .card:hover::before { opacity:1; }
+        .card h3 { position:relative; font-family:var(--mono); font-size:18px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+        .dot { width:8px; height:8px; border-radius:50%; background:var(--bid); box-shadow:0 0 8px var(--bid); animation:pulse 2.4s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { box-shadow:0 0 6px var(--bid); opacity:1; } 50% { box-shadow:0 0 12px var(--bid); opacity:.7; } }
+        .card p { position:relative; color:var(--muted); font-size:15px; margin-bottom:16px; }
+        .tags { position:relative; display:flex; flex-wrap:wrap; gap:8px; }
+        .tag { font-family:var(--mono); font-size:12px; color:var(--text); background:rgba(240,168,51,.08); border:1px solid var(--border); padding:4px 10px; border-radius:5px; }
+        .skills-group { margin-bottom:28px; }
+        .skills-group:last-child { margin-bottom:0; }
+        .skills-group h4 { font-size:14px; color:var(--muted); font-weight:500; margin-bottom:12px; }
+        .skills { display:flex; flex-wrap:wrap; gap:8px; list-style:none; }
+        .skills li { font-family:var(--mono); font-size:13px; padding:6px 12px; border:1px solid var(--border); border-radius:6px; background:var(--panel); transition:border-color .18s ease,color .18s ease,transform .18s ease; }
+        .skills li:hover { border-color:var(--amber); color:var(--amber); transform:translateY(-2px); }
+        .skills.learning li { border-color:var(--amber-dim); }
+        footer { padding:48px 0 72px; }
+        .contacts { display:flex; flex-wrap:wrap; gap:12px; }
+        .contacts a { font-family:var(--mono); font-size:14px; color:var(--text); text-decoration:none; border:1px solid var(--border); padding:10px 16px; border-radius:6px; transition:border-color .18s ease,color .18s ease; }
+        .contacts a:hover, .contacts a:focus-visible { border-color:var(--amber); color:var(--amber); outline:none; }
+        a:focus-visible { outline:2px solid var(--amber); outline-offset:3px; }
+        .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+        @media (prefers-reduced-motion: reduce) { *,*::before { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
+        @media (max-width:540px) { header { padding:60px 0 40px; } header h1 { font-size:40px; } section { padding:36px 0; } }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <div class="wrap">
+        <header>
+            <div class="prompt" id="prompt"><span class="caret"></span></div>
+            <h1>Dimon</h1>
+            <p class="role">Начинающий <b>frontend-разработчик</b></p>
+        </header>
+        <section class="reveal">
+            <div class="label">Обо мне</div>
+            <p class="about-text">
+                Изучаю HTML, CSS и JavaScript, создаю интерфейсы и живые страницы.
+                Параллельно пишу автоматизацию на Python и работаю с нейросетями.
+                Сейчас собираю первые проекты и постепенно расширяю навыки.
+            </p>
+        </section>
+        <section class="reveal">
+            <div class="label">Проекты</div>
+            <div class="card">
+                <h3><span class="dot"></span>Торговый бот (Bybit)</h3>
+                <p>
+                    Автоматический торговый бот на Python для биржи Bybit.
+                    Стратегия усреднения позиции (DCA) по сетке уровней с трейлинг-стопом
+                    для фиксации прибыли и стоп-лоссом для контроля риска. Читает поток
+                    рынка через WebSocket, шлёт уведомления о сделках в Telegram и работает
+                    в фоне на Linux-сервере.
+                </p>
+                <div class="tags">
+                    <span class="tag">Python</span>
+                    <span class="tag">Bybit API</span>
+                    <span class="tag">WebSocket</span>
+                    <span class="tag">Telegram</span>
+                    <span class="tag">Linux</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3><span class="dot"></span>Эта страница</h3>
+                <p>
+                    Персональная визитка на чистом HTML, CSS и немного JavaScript, без фреймворков.
+                    Адаптируется под телефон, выложена через GitHub Pages.
+                    Первый шаг во frontend — сверстал сам.
+                </p>
+                <div class="tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">GitHub Pages</span>
+                </div>
+            </div>
+        </section>
+        <section class="reveal">
+            <div class="label">Навыки</div>
+            <div class="skills-group">
+                <h4>Сейчас изучаю</h4>
+                <ul class="skills learning">
+                    <li>HTML</li><li>CSS</li><li>JavaScript</li>
+                </ul>
+            </div>
+            <div class="skills-group">
+                <h4>Уже работаю с</h4>
+                <ul class="skills">
+                    <li>Python</li><li>REST / WebSocket API</li><li>Telegram Bot API</li><li>Linux / SSH</li><li>Git</li>
+                </ul>
+            </div>
+        </section>
+        <footer class="reveal">
+            <div class="label">Контакты</div>
+            <!-- Замени # на свои реальные ссылки: GitHub, Telegram, почта -->
+            <div class="contacts">
+                <a href="https://github.com/proffessor93" target="_blank" rel="noopener">GitHub</a>
+                
+                <a href="https://t.me/proffessor93" target="_blank" rel="noopener">Telegram</a>
+                <a href="mailto:proffessor93@gmail.com">Email</a>
+            </div>
+        </footer>
+    </div>
+    <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 1. Печать строки в терминале
+    (function typePrompt() {
+        const el = document.getElementById('prompt');
+        const full = 'dimon@dev:~$ whoami';
+        const caret = '<span class="caret"></span>';
+        if (reduce) { el.innerHTML = '<span class="amber">dimon@dev</span>:~$ whoami' + caret; return; }
+        let i = 0;
+        (function step() {
+            const shown = full.slice(0, i);
+            const colon = shown.indexOf(':');
+            const html = colon === -1
+                ? '<span class="amber">' + shown + '</span>'
+                : '<span class="amber">' + shown.slice(0, colon) + '</span>' + shown.slice(colon);
+            el.innerHTML = html + caret;
+            i++;
+            if (i <= full.length) setTimeout(step, 55);
+        })();
+    })();
+
+    // 2. Появление секций при скролле
+    (function revealOnScroll() {
+        const items = document.querySelectorAll('.reveal');
+        if (reduce || !('IntersectionObserver' in window)) { items.forEach(el => el.classList.add('visible')); return; }
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0.15 });
+        items.forEach(el => obs.observe(el));
+    })();
+
+    // 3. Подсветка карточек под курсором
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('pointermove', (e) => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+            card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        });
+    });
+
+    // 4. Живой фон: медленно дрейфующие точки-сеть
+    (function ambientDots() {
+        const canvas = document.getElementById('bg-canvas');
+        if (reduce) return;
+        const ctx = canvas.getContext('2d');
+        let w, h, dots;
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            const count = Math.min(70, Math.floor(w * h / 22000));
+            dots = Array.from({ length: count }, () => ({
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25,
+                r: Math.random() * 1.6 + 0.6,
+            }));
+        }
+        function frame() {
+            ctx.clearRect(0, 0, w, h);
+            for (const d of dots) {
+                d.x += d.vx; d.y += d.vy;
+                if (d.x < 0 || d.x > w) d.vx *= -1;
+                if (d.y < 0 || d.y > h) d.vy *= -1;
+                ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(240,168,51,0.18)'; ctx.fill();
+            }
+            for (let i = 0; i < dots.length; i++) {
+                for (let j = i + 1; j < dots.length; j++) {
+                    const dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < 110) {
+                        ctx.beginPath();
+                        ctx.moveTo(dots[i].x, dots[i].y); ctx.lineTo(dots[j].x, dots[j].y);
+                        ctx.strokeStyle = 'rgba(240,168,51,' + (0.06 * (1 - dist / 110)) + ')';
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(frame);
+        }
+        window.addEventListener('resize', resize);
+        resize(); frame();
+    })();
+    </script>
+</body>
+</html>
