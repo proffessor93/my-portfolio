@@ -35,6 +35,8 @@
         .dot { width:8px; height:8px; border-radius:50%; background:var(--bid); box-shadow:0 0 8px var(--bid); animation:pulse 2.4s ease-in-out infinite; }
         @keyframes pulse { 0%,100% { box-shadow:0 0 6px var(--bid); opacity:1; } 50% { box-shadow:0 0 12px var(--bid); opacity:.7; } }
         .card p { position:relative; color:var(--muted); font-size:15px; margin-bottom:16px; }
+        .card-link { position:relative; display:inline-block; margin-top:16px; font-family:var(--mono); font-size:13px; color:var(--amber); text-decoration:none; border:1px solid var(--amber-dim); padding:8px 14px; border-radius:6px; transition:background .18s ease,border-color .18s ease; }
+        .card-link:hover, .card-link:focus-visible { background:rgba(240,168,51,.10); border-color:var(--amber); outline:none; }
         .tags { position:relative; display:flex; flex-wrap:wrap; gap:8px; }
         .tag { font-family:var(--mono); font-size:12px; color:var(--text); background:rgba(240,168,51,.08); border:1px solid var(--border); padding:4px 10px; border-radius:5px; }
         .skills-group { margin-bottom:28px; }
@@ -89,6 +91,7 @@
                     <span class="tag">Telegram</span>
                     <span class="tag">Linux</span>
                 </div>
+                <a class="card-link" href="https://github.com/proffessor93/bot-baybit" target="_blank" rel="noopener">Код на GitHub →</a>
             </div>
             <div class="card">
                 <h3><span class="dot"></span>Эта страница</h3>
@@ -125,7 +128,6 @@
             <!-- Замени # на свои реальные ссылки: GitHub, Telegram, почта -->
             <div class="contacts">
                 <a href="https://github.com/proffessor93" target="_blank" rel="noopener">GitHub</a>
-                
                 <a href="https://t.me/proffessor93" target="_blank" rel="noopener">Telegram</a>
                 <a href="mailto:proffessor93@gmail.com">Email</a>
             </div>
@@ -216,4 +218,4 @@
     })();
     </script>
 </body>
-</html> 
+</html>
